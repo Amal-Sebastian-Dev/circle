@@ -7,14 +7,14 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 class UserManager(BaseUserManager):
     # Creates a regular user
-    def create_user(self, phone_no, password = None):
+    def create_user(self, email, password = None):
         # Checking for email and username
-        if not phone_no:
-            raise ValueError("Enter a valid phone number")
+        if not email:
+            raise ValueError("Enter a valid Email ID")
 
         # Adding the data to the model and registering
         user = self.model(
-            phone_no = phone_no,
+            email = email,
             password = password,
         )
 
@@ -48,7 +48,8 @@ class User(AbstractBaseUser):
     is_official = models.BooleanField(
         verbose_name = 'official status',
         default = False,
-    )
+    )    # PasswordField is provided by the AbstractBaseUser class
+    # LastLoginField is provided by the AbstractBaseUser class
     is_applicant = models.BooleanField(
         verbose_name = 'applicant status',
         default = False,
