@@ -133,3 +133,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Custom User Model
 
 AUTH_USER_MODEL = 'accounts.User'
+
+# Media Root
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -20,16 +20,16 @@ class RegisterForm(UserCreationForm):
 		
 	class Meta:
 		model = User
-		fields = ['email', 'full_name', 'aadhar_no']
+		fields = ['email', 'aadhar_no']
 		widgets = {
 			'email' : forms.EmailInput(attrs={
 				'placeholder' : 'Email',
 				'class' : 'form-control',
 			}),
-			'full_name' : forms.TextInput(attrs={
+			''''full_name' : forms.TextInput(attrs={
 				'placeholder' : 'Full Name',
 				'class' : 'form-control',
-			}),
+			}),'''
 			'aadhar_no' : forms.TextInput(attrs={
 				'placeholder' : 'Aadhar No',
 				'class' : 'form-control',

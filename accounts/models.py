@@ -3,26 +3,25 @@
 from django.db import models
 
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
     '''     User Manager    '''
     # Creates a regular user
-    def create_user(self, email, full_name, password, **extra_fields):
+    def create_user(self, email,  password, **extra_fields):
         # Checking for email
         if not email:
             raise ValueError("Enter a valid Email ID")
-        # Checking for Name
-        if not full_name:
-            raise ValueError("Enter a valid Name")
             
         email = self.normalize_email(email)
         # Adding the data to the database and registering
         user = self.model(
             email = email,
-            full_name = full_name,
             **extra_fields
         )
+        print(password)
+        print(email)
         user.set_password(password)
         user.save(using = self._db)
         return user
@@ -78,7 +77,8 @@ class User(AbstractUser):
     )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [
-        full_name
+        full_name,
+        aadhar_no,
     ]
     objects = UserManager()
     
@@ -87,4 +87,65 @@ class User(AbstractUser):
 
 class Applicant(models.Model):
     '''     Applicant Model     '''
-    pass
+    address = models.CharField(
+        max_length = 255,
+    )
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete = models.CASCADE,
+        editable = False,
+    )
+
+class Office(models.Model):
+    '''     Office Model    '''
+    office_type = models.CharField(
+        max_length = 30,
+        verbose_name = 'Office Type'
+    )
+    districts = [
+        ('AL', 'Alappuzha'),
+        ('ER', 'Ernakulam'),
+        ('ID', 'Idukki'),
+        ('KN', 'Kannur'),
+        ('KS', 'Kasargod'),
+        ('KL', 'Kollam'),
+        ('KT', 'Kottayam'),
+        ('KZ', 'Kozhikode'),
+        ('MA', 'Malappuram'),
+        ('PL', 'Palakkad'),
+        ('PT', 'Pathanamthitta'),
+        ('TV', 'Thiruvananthapuram'),
+        ('TS', 'Thrissur'),
+        ('WA', 'Wayanad'),
+    ]
+    district = models.CharField(
+        choices = districts,
+        max_length = 2,
+        verbose_name = 'District',
+        blank = False
+    )
+    location = models.CharField(
+        max_length = 30,
+        verbose_name = "Location of the office",
+        blank = False,
+    )
+    
+    
+
+class Official(models.Model):
+    '''     Official Model      '''
+    position = models.CharField(
+        max_length = 50,
+        verbose_name = "Position",
+        blank = False,
+    )
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete = models.CASCADE,
+        editable = False,
+    )
+    office = models.ForeignKey(
+        Office,
+        on_delete = models.CASCADE,
+        editable = False,
+    )

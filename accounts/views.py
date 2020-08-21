@@ -10,6 +10,7 @@ from .forms import RegisterForm, LoginForm
 
 # Register View
 def registerView(request):
+    # Processing the submitted registration form
     if request.method == 'POST':
         register_form = RegisterForm(request.POST)
         if (register_form.is_valid()):
