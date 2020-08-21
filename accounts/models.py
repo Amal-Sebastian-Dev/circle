@@ -6,15 +6,21 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
 class UserManager(BaseUserManager):
+    '''     User Manager    '''
     # Creates a regular user
-    def create_user(self, email, password, **extra_fields):
+    def create_user(self, email, full_name, password, **extra_fields):
         # Checking for email
         if not email:
             raise ValueError("Enter a valid Email ID")
+        # Checking for Name
+        if not full_name:
+            raise ValueError("Enter a valid Name")
+            
         email = self.normalize_email(email)
         # Adding the data to the database and registering
         user = self.model(
             email = email,
+            full_name = full_name,
             **extra_fields
         )
         user.set_password(password)
@@ -40,12 +46,12 @@ class User(AbstractUser):
     username = None
     first_name = None
     last_name = None
-    ''''full_name = models.CharField(
+    full_name = models.CharField(
         max_length = 50,
         verbose_name = 'Full Name',
         blank = False,
         null = False,
-    )'''
+    )
     email = models.EmailField(
         primary_key = True,
         verbose_name = "Email ID",
@@ -53,6 +59,11 @@ class User(AbstractUser):
         null = False,
         blank = False,
         help_text = "Please enter applicants Email ID."
+    )
+    aadhar_no = models.IntegerField(
+        verbose_name = "Aadhar No",
+        blank = False,
+        null = False,
     )
     # PasswordField is provided by the AbstractBaseUser class
     # LastLoginField is provided by the AbstractBaseUser class
@@ -67,9 +78,13 @@ class User(AbstractUser):
     )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [
-        #full_name
+        full_name
     ]
     objects = UserManager()
     
     def __str__(self):
         return self.full_name
+
+class Applicant(models.Model):
+    '''     Applicant Model     '''
+    pass

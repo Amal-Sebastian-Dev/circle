@@ -4,15 +4,16 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.http import HttpResponse
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from .forms import RegisterForm, LoginForm
 
 # Register View
 def registerView(request):
     if request.method == 'POST':
-        auth_details = RegisterForm(request.POST)
-        if (auth_details.is_valid()):
-            user = auth_details.save()
+        register_form = RegisterForm(request.POST)
+        if (register_form.is_valid()):
+            user = register_form.save()
             user.save()
             login(request, user)
             return HttpResponse("register success")
@@ -20,9 +21,9 @@ def registerView(request):
             messages.error(request, "Invalid data, Try again..!")
             
     #Creating the forms
-    auth_form = RegisterForm()
+    register_form = RegisterForm()
     context = {
-        'auth_form' : auth_form,
+        'register_form' : register_form,
         'title' : "Register as Candidate",
     }
     return render(request, 'accounts/register.html', context)
