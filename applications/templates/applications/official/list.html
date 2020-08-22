@@ -10,27 +10,22 @@
 	<table id="jobs-table" class="table align-items-center table-flush">
 		<thead class="thead-light">
 			<tr>
+				<th scope="col">Applicant</th>
 				<th scope="col">Scheme</th>
-				<th scope="col">office Type</th>
-				<th scope="col">Location</th>
 				<th scope="col">Status</th>
 				<th scope="col">Remaining Days</th>
+				<th scope="col">Action</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for application in applications %}
 				<tr>
 					<th scope="row">
-						<a href="{% url 'view_application' application.id %}">
-							{{ application.scheme.name }}
-						</a>
+						{{ application.applicant.full_name }}
 					</th>
-					<td>
-						{{ application.office.office_type }}
-					</td>
-					<td>
-						{{ application.office.location }}
-					</td>
+					<th scope="row">
+						{{ application.scheme.name }}
+					</th>
 					<td>
 						<span class="badge badge-pill badge-{% if application.status == 'Pending' %}warning{% elif application.status == 'Reviewed' %}info{% elif application.status == 'Rejected' %}danger{% else %}success{% endif %}">
 							{{ application.status }}
@@ -40,6 +35,14 @@
 						{{ application.getRemainingDays }}
 							
 					</td>
+					<td class="align-center">
+						{% if application.status == 'Pending' %}
+							<a href="{% url 'change_status' application.id %}"><button class="btn btn-primary btn-sm">Review</button></a>
+						{% else %}
+							<a href="{% url 'view_application' application.id %}"><button class="btn btn-primary btn-sm">View</button></a>
+						{% endif %}
+					</td>
+					
 				</tr>
 				{% empty %}
 				<tr>

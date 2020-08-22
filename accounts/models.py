@@ -133,5 +133,4 @@ class Official(models.Model):
     office = models.ForeignKey(
         Office,
         on_delete = models.CASCADE,
-        editable = False,
     )

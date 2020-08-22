@@ -1,0 +1,90 @@
+{% extends 'applications/base.html' %}
+
+
+{% block page_content %}
+<div class="card shadow my-4 pt-2">
+	<div class="card-header my--4">
+		<div class="row">
+			<div class="col">
+				<h2>Application Details</h2>
+			</div>
+			<div class="col">
+				{% if user.is_official and  application.status == 'Reviewed' %}
+					<a href="{% url 'change_status' application.id 0 %}"><button class="btn btn-sm btn-danger float-right mx-1">Reject</button></a>
+					<a href="{% url 'change_status' application.id 1 %}"><button class="btn btn-sm btn-success float-right mx-1">Grant</button></a>
+					<a href="{% url 'apply_scheme' application.id %}"><button class="btn btn-sm btn-default float-right mx-1">Redirect</button></a>
+				{% endif %}
+			</div>
+	</div>
+	<div class="card-body mt-1">
+		<div class="row">
+			<div class="col-7">
+				<div class="row">
+					<div class="col-3">
+						<label class="form-control-label">Scheme</label>
+					</div>
+					<div class="col-4">
+						:   {{ application.scheme.name }}
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-3">
+						<label class="form-control-label">Applicant Name</label>
+					</div>
+					<div class="col-4">
+						:   {{ application.applicant.full_name }}
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-3">
+						<label class="form-control-label">Aadhar No</label>
+					</div>
+					<div class="col-4">
+						:   {{ application.applicant.aadhar_no }}
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-3">
+						<label class="form-control-label">Status</label>
+					</div>
+					<div class="col-4">
+						:   <span class="badge badge-pill badge-{% if application.status == 'Pending' %}warning{% elif application.status == 'Reviewed' %}info{% elif application.status == 'Rejected' %}danger{% else %}success{% endif %}">
+								{{ application.status }}
+							</span>
+					</div>
+				</div>
+				<div class = "row">
+					<div class="col">
+						<h4 class="mt-3 text-left">Comments</h4>
+					</div>
+					{% if user.is_official %}
+						<div class="col">
+							<button class="btn btn-sm btn-warning float-right" data-id="{{ application.id }}" id="update-comment">Update</button>
+						</div>
+					{% endif %}
+				</div>
+				<hr class="mb-2 mt-1">
+				<div id="comment">
+					{{ application.comment|default_if_none:"No Comments" }}
+				</div>
+			</div>
+			<div class="col-5">
+				<h3 class=" text-left">Supporting Docs</h3>
+				<hr class="mb-2 mt-1">
+				{% for d in application.supportingdoc.all %}
+					<a href="{{ d.doc.url }}" target="_blank">attachment</a><br>
+				{% endfor %}
+				<hr class="mb-2 mt-1">
+				{% if user.is_official %}
+					<a href="{% url 'view_records' application.applicant.uid  %}"><h4>Previous Records</h4></a>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% if applications %}
+	<div class="pt-2">
+		{% include 'applications/applicant/list.html' %}
+	</div>
+{% endif %}
+{% endblock %}

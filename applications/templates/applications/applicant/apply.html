@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="card-body">
-      <form action="{% url 'apply_scheme' %}" method="POST">
+      <form action="{% if application_id %}{% url 'apply_scheme' application_id %}{% else %}{% url 'apply_scheme' %}{% endif %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
           <div class="row mb-2">
@@ -46,6 +46,10 @@
               <label class="form-control-label">{{ form.location.label }}</label>
               {{ form.location }}
             </div>
+          </div>
+          <div class="my-2">
+            <label class="form-control-label">{{ docs_form.doc.label }}</label>
+            {{ docs_form.doc }}
           </div>
           <input type="submit" value="Apply">
       </form>

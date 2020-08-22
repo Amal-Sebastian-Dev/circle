@@ -2,7 +2,7 @@
 
 from django import forms
 
-from .models import Application, Scheme
+from .models import Application, Scheme, SupportingDoc
 from . import choices
 
 class ApplySchemeForm(forms.Form):
@@ -50,4 +50,24 @@ class ApplySchemeForm(forms.Form):
 			'required' : '',
 		})
 	)
-	
+
+class SupportDocsForm(forms.ModelForm):
+	class Meta:
+		model = SupportingDoc
+		fields = ['doc']
+		widgets = {
+			'doc' : forms.ClearableFileInput(attrs={
+				'multiple': True,
+			})
+		}
+
+class UpdateCommentForm(forms.ModelForm):
+	class Meta:
+		model = Application
+		fields = ['comment']
+		widgets = {
+			'comment' : forms.Textarea(attrs={
+				'placeholder' : 'Comment',
+				'class' : 'form-control',
+			})
+		}

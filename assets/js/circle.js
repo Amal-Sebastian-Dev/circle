@@ -3,7 +3,6 @@
 */
 // Loads the password change form async
 $("#change-password").click(function () {
-	console.log("change-password");
 	$.ajax({
 		url: '/accounts/reset/',
 		type: 'get',
@@ -57,6 +56,10 @@ function listStatusWise(status){
 $("#total-count").click(function(){
 	listStatusWise('All');
 });
+// On Click status granted card load of all applications
+$("#granted-count").click(function(){
+	listStatusWise('Granted');
+});
 // On Click status reviewed card load of Reviewed applications
 $("#reviewed-count").click(function(){
 	listStatusWise('Reviewed');
@@ -65,3 +68,44 @@ $("#reviewed-count").click(function(){
 $("#pending-count").click(function(){
 	listStatusWise('Pending');
 });
+
+/*
+ * 		Update Comment
+*/
+// Loads Form
+$("#update-comment").click(function(){
+	var id = $(this).data('id');
+	$.ajax({
+		url: '/applications/official/comment/'+id+'/',
+		type: 'get',
+		dataType: 'json',
+		beforeSend: function () {
+			$("#modal").modal("show");
+		},
+		success: function (data) {
+			console.log(data);
+			$("#modal .modal-content").html(data.html_form);
+		}
+	});
+});
+// Submits form
+$("#modal").on("submit", "#update-comment-form", function () {
+	var form = $(this);
+	$.ajax({
+		url: form.attr("action"),
+		data: form.serialize(),
+		type: form.attr("method"),
+		dataType: 'json',
+		success: function (data) {
+			if (data.form_is_valid) {
+				$("#modal").modal("hide");
+				$("#comment").html(data.comment);
+			}
+			else {
+				$("#modal .modal-content").html(data.html_form);
+			}
+		}
+	});
+	return false;
+});
+

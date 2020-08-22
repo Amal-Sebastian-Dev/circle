@@ -55,7 +55,7 @@ def loginView(request):
 # Logout View
 def logoutView(request):
     logout(request)
-    messages.info(request, "Logged out successfully.")
+    #messages.info(request, "Logged out successfully.")
     return redirect('home')
 
 # Password Reset View
