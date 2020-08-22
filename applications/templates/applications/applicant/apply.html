@@ -1,0 +1,55 @@
+{% extends 'applications/base.html' %}
+{% block sidenav %}
+  {% include 'applications/nav/sidenav.html' %}
+{% endblock %}
+{% block page_header %}
+
+{% endblock %}
+{% block page_content %}
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header border-0">
+      <div class="row align-items-center">
+        <div class="col">
+          <h3 class="mb-0">New Applications {{ test }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <form action="{% url 'apply_scheme' %}" method="POST">
+        {% csrf_token %}
+        
+          <div class="row mb-2">
+            <div class="col-3">
+              <label class="form-control-label">{{ form.application_type.label }}</label>
+              {{ form.application_type }}
+            </div>
+            <div class="col-3">
+              <label class="form-control-label">{{ form.category.label }}</label>
+              {{ form.category }}
+            </div>
+            <div class="col-6">
+              <label class="form-control-label">{{ form.scheme.label }}</label>
+              {{ form.scheme }}
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-3">
+              <label class="form-control-label">{{ form.district.label }}</label>
+               {{ form.district }}
+            </div>
+            <div class="col-3">
+              <label class="form-control-label">{{ form.office_type.label }}</label>
+              {{ form.office_type }}
+            </div>
+            <div class="col-6">
+              <label class="form-control-label">{{ form.location.label }}</label>
+              {{ form.location }}
+            </div>
+          </div>
+          <input type="submit" value="Apply">
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

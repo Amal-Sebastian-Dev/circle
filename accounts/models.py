@@ -1,10 +1,10 @@
 # User model for authentication
 
 from django.db import models
-
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.conf import settings
 
+from applications import choices
 
 class UserManager(BaseUserManager):
     '''     User Manager    '''
@@ -45,6 +45,9 @@ class User(AbstractUser):
     username = None
     first_name = None
     last_name = None
+    uid = models.AutoField(
+        primary_key = True,
+    )
     full_name = models.CharField(
         max_length = 50,
         verbose_name = 'Full Name',
@@ -52,7 +55,7 @@ class User(AbstractUser):
         null = False,
     )
     email = models.EmailField(
-        primary_key = True,
+        #primary_key = True,
         verbose_name = "Email ID",
         unique = True,
         null = False,
@@ -93,33 +96,17 @@ class Applicant(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete = models.CASCADE,
-        editable = False,
     )
 
 class Office(models.Model):
     '''     Office Model    '''
     office_type = models.CharField(
+        choices = choices.office_types,
         max_length = 30,
         verbose_name = 'Office Type'
     )
-    districts = [
-        ('AL', 'Alappuzha'),
-        ('ER', 'Ernakulam'),
-        ('ID', 'Idukki'),
-        ('KN', 'Kannur'),
-        ('KS', 'Kasargod'),
-        ('KL', 'Kollam'),
-        ('KT', 'Kottayam'),
-        ('KZ', 'Kozhikode'),
-        ('MA', 'Malappuram'),
-        ('PL', 'Palakkad'),
-        ('PT', 'Pathanamthitta'),
-        ('TV', 'Thiruvananthapuram'),
-        ('TS', 'Thrissur'),
-        ('WA', 'Wayanad'),
-    ]
     district = models.CharField(
-        choices = districts,
+        choices = choices.districts,
         max_length = 2,
         verbose_name = 'District',
         blank = False
@@ -142,7 +129,6 @@ class Official(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete = models.CASCADE,
-        editable = False,
     )
     office = models.ForeignKey(
         Office,

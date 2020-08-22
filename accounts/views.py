@@ -2,11 +2,12 @@
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-from .forms import RegisterForm, LoginForm
+from .forms import RegisterForm, LoginForm, PasswordChangeForm
 
 # Register View
 def registerView(request):
@@ -15,8 +16,6 @@ def registerView(request):
         register_form = RegisterForm(request.POST)
         if (register_form.is_valid()):
             user = register_form.save()
-            user.save()
-            login(request, user)
             return HttpResponse("register success")
         else:
             messages.error(request, "Invalid data, Try again..!")
@@ -41,11 +40,12 @@ def loginView(request):
             user = authenticate(email=email, password=password)
             if user is not None:
                 login(request, user)
-                return HttpResponse('Logged in')
-            else:
-                messages.error(request, "Invalid username or password.")
+                if user.is_official:
+                    return redirect('official_dashboard')
+                elif user.is_applicant:
+                    return redirect('applicant_dashboard')
         else:
-            return HttpResponse('Invalid Form, Try Again')
+             messages.error(request, "Invalid username or password.")
     context = {
             'login_form' : login_form,
             'title'      : 'Login',
@@ -61,18 +61,18 @@ def logoutView(request):
 # Password Reset View
 @login_required
 def passwordResetView(request):
-	data = dict()
-	if request.method == 'POST':
-		form = PasswordChangeForm(request.user, request.POST)
-		if form.is_valid():
-			user = form.save()
-			update_session_auth_hash(request, user)
-			data['form_is_valid'] = True
-			data['message'] = '<div class="alert alert-success alert-dismissible fade show" role="alert"><span class="alert-icon"><i class="ni ni-like-2"></i></span><span class="alert-text">Password Changed Successfully</span><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
-		else:
-			data['message'] = '<div class="alert alert-danger" role="alert">Invalid Credentials! Try again</div>'
-	else:
-		form = PasswordChangeForm(request.user)
-		data['html_form'] = render_to_string('accounts/change_password.html', { 'form' : form }, request = request)
-	return JsonResponse(data)
+    data = dict()
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            data['form_is_valid'] = True
+            data['message'] = '<div class="alert alert-success alert-dismissible fade show" role="alert"><span class="alert-icon"><i class="ni ni-like-2"></i></span><span class="alert-text">Password Changed Successfully</span><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+        else:
+            data['message'] = '<div class="alert alert-danger" role="alert">Invalid Credentials! Try again</div>'
+    else:
+        form = PasswordChangeForm(request.user)
+        data['html_form'] = render_to_string('accounts/change_password.html', { 'form' : form }, request = request)
+    return JsonResponse(data)
 

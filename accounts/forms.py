@@ -20,16 +20,16 @@ class RegisterForm(UserCreationForm):
 		
 	class Meta:
 		model = User
-		fields = ['email', 'aadhar_no']
+		fields = ['email', 'full_name', 'aadhar_no']
 		widgets = {
 			'email' : forms.EmailInput(attrs={
 				'placeholder' : 'Email',
 				'class' : 'form-control',
 			}),
-			''''full_name' : forms.TextInput(attrs={
+			'full_name' : forms.TextInput(attrs={
 				'placeholder' : 'Full Name',
 				'class' : 'form-control',
-			}),'''
+			}),
 			'aadhar_no' : forms.TextInput(attrs={
 				'placeholder' : 'Aadhar No',
 				'class' : 'form-control',
@@ -45,5 +45,21 @@ class LoginForm(AuthenticationForm):
 		})
 		self.fields['password'].widget.attrs.update({
 			'placeholder' : 'Password',
+			'class' : 'form-control',
+		})
+
+class PasswordChangeForm(PasswordChangeForm):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args,**kwargs)
+		self.fields['old_password'].widget.attrs.update({
+			'placeholder' : 'Old Password',
+			'class' : 'form-control',
+		})
+		self.fields['new_password1'].widget.attrs.update({
+			'placeholder' : 'New Password',
+			'class' : 'form-control',
+		})
+		self.fields['new_password2'].widget.attrs.update({
+			'placeholder' : 'Confirm New Password',
 			'class' : 'form-control',
 		})
