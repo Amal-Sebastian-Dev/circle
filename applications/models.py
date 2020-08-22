@@ -15,9 +15,9 @@ class Scheme(models.Model):
 	description = models.TextField(
 		verbose_name = "Description",
 	)
-	year_created = models.IntegerField(
-		verbose_name = "Year",
-		help_text = 'Year in which the scheme was declared',
+	validity = models.IntegerField(
+		verbose_name = "Days",
+		help_text = 'Days of validity',
 	)
 	depts = [
 		('Health', 'Health'),
@@ -69,6 +69,10 @@ class Application(models.Model):
 		blank = False,
 		null = True,
 	)
+	end_date = models.DateField(
+		verbose_name = 'End Date',
+		null = True,
+	)
 	applied_on = models.DateField(
 		auto_now = True,
 		verbose_name = 'Date applied',
@@ -99,8 +103,8 @@ class Application(models.Model):
 	def getRemainingDays(self):
 		# Function to calculate remaining days for clearing the application
 		today = datetime.date.today()
-		last_date = today + datetime.timedelta(days = self.scheme.time_period)
-		remaining_days = (last_date - self.applied_on).days
+		last_date = self.applied_on + datetime.timedelta(days = self.scheme.time_period)
+		remaining_days = (last_date - today).days
 		return remaining_days
 
 class SupportingDoc(models.Model):
@@ -118,3 +122,19 @@ class SupportingDoc(models.Model):
 	def getFilename(self):
 		print(os.path.basename(self.doc.name))
 		return os.path.basename(self.doc.name)
+
+
+class Certificate(models.Model):
+	certificate = models.FileField(
+		upload_to = 'certificates/',
+		verbose_name = "Certificate",
+		blank = True,
+		null = True,
+	)
+	application = models.ForeignKey(
+		Application,
+		on_delete = models.CASCADE,
+		related_name = 'certificate'
+	)
+	def getFilename(self):
+		return os.path.basename(self.certificate.name)

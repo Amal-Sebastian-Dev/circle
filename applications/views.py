@@ -4,9 +4,10 @@ from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+import datetime
 
-from .forms import ApplySchemeForm, SupportDocsForm, UpdateCommentForm
-from .models import Application, Scheme, SupportingDoc
+from .forms import ApplySchemeForm, SupportDocsForm, UpdateCommentForm, AddCertificateForm
+from .models import Application, Scheme, SupportingDoc, Certificate
 from accounts.models import Office
 
 def isApplicant(user):
@@ -94,8 +95,6 @@ def applySchemeView(request, application_id=None):
 		form = ApplySchemeForm(request.POST)
 		docs_form = SupportDocsForm(request.POST, request.FILES)
 		files = request.FILES.getlist('doc')
-		for f in files:
-			print(f)
 		if form.is_valid() and docs_form.is_valid():
 			# Getting application type
 			application_type = form.cleaned_data['application_type']
@@ -142,18 +141,21 @@ def applySchemeView(request, application_id=None):
 def viewApplicationView(request, application_id):
 	application = Application.objects.get(pk = application_id)
 	redirected = Application.objects.filter(redirected_from = application_id)
+	certificate_form = AddCertificateForm()
+	doc_form = SupportDocsForm()
 	context = {
 		'application' : application,
 		'applications' : redirected,
+		'certificate_form' : certificate_form,
+		'doc_form' : doc_form,
+		
 	}
 	return render(request, 'applications/view/details.html', context = context)
 
 @login_required
 @user_passes_test(isOfficial)
-def viewApplicantRecordsView(request, applicant_id):
-	print(applicant_id)
-	applications = Application.objects.filter(applicant = applicant_id)
-	print(applications)
+def viewActiveRecordsView(request, applicant_id):
+	applications = Application.objects.filter(applicant = applicant_id, end_date__gt=datetime.date.today())
 	context = {
 		'applications' : applications,
 	}
@@ -167,6 +169,7 @@ def changeStatusView(request, application_id, status = None):
 	if status == 1:
 		# Grant Application
 		application.status = 'Granted'
+		application.end_date = datetime.date.today() + datetime.timedelta(days = application.scheme.validity)
 	elif status == 0:
 		# Reject Application
 		application.status = 'Rejected'
@@ -195,3 +198,32 @@ def updateCommentView(request, application_id):
 		}
 		data['html_form'] = render_to_string('applications/view/update.html', context, request=request)
 	return JsonResponse(data)
+
+@login_required
+@user_passes_test(isOfficial)
+def addCertificatesView(request, application_id):
+	if request.method == 'POST':
+		form = AddCertificateForm(request.POST, request.FILES)
+		files = request.FILES.getlist('certificate')
+		if form.is_valid():
+			application = Application.objects.get(pk = application_id)
+			for f in files:
+				file_obj = Certificate(certificate = f, application = application)
+				file_obj.save()
+				print(file_obj)
+	return redirect('view_application', application_id = application_id)
+
+@login_required
+@user_passes_test(isApplicant)
+def addDocView(request, application_id):
+	if request.method == 'POST':
+		form = SupportDocsForm(request.POST, request.FILES)
+		files = request.FILES.getlist('doc')
+		if form.is_valid():
+			application = Application.objects.get(pk = application_id)
+			for f in files:
+				file_obj = SupportingDoc(doc = f, application = application)
+				file_obj.save()
+				print(file_obj)
+	return redirect('view_application', application_id = application_id)
+

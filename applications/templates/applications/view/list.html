@@ -4,7 +4,7 @@
 	<div class="card-header border-0">
 		<div class="row align-items-center">
 			<div class="col">
-				<h2 class="mb-0">Previous Records</h2>
+				<h2 class="mb-0">Active Records</h2>
 			</div>
 		 </div>
 	</div>
@@ -16,8 +16,8 @@
 					<th scope="col">Scheme</th>
 					<th scope="col">office Type</th>
 					<th scope="col">Location</th>
-					<th scope="col">Status</th>
-					<th scope="col">Remaining Days</th>
+					<th scope="col">End Date</th>
+					<th scope="col">Action</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -34,14 +34,11 @@
 						<td>
 							{{ application.office.location }}
 						</td>
-						<td>
-							<span class="badge badge-pill badge-{% if application.status == 'Pending' %}warning{% elif application.status == 'Reviewed' %}info{% elif application.status == 'Rejected' %}danger{% else %}success{% endif %}">
-								{{ application.status }}
-							</span>
+						<td class="align-center">
+							{{ application.end_date }}
 						</td>
 						<td class="align-center">
-							{{ application.getRemainingDays }}
-								
+							<a href="{% url 'view_application' application.id %}"><button class="btn btn-primary btn-sm">View</button></a>
 						</td>
 					</tr>
 					{% empty %}

@@ -108,4 +108,3 @@ $("#modal").on("submit", "#update-comment-form", function () {
 	});
 	return false;
 });
-

@@ -2,7 +2,7 @@
 
 from django import forms
 
-from .models import Application, Scheme, SupportingDoc
+from .models import Application, Scheme, SupportingDoc, Certificate
 from . import choices
 
 class ApplySchemeForm(forms.Form):
@@ -69,5 +69,15 @@ class UpdateCommentForm(forms.ModelForm):
 			'comment' : forms.Textarea(attrs={
 				'placeholder' : 'Comment',
 				'class' : 'form-control',
+			})
+		}
+
+class AddCertificateForm(forms.ModelForm):
+	class Meta:
+		model = Certificate
+		fields = ['certificate']
+		widgets = {
+			'certificate' : forms.ClearableFileInput(attrs={
+				'multiple': True,
 			})
 		}

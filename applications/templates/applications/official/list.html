@@ -13,7 +13,13 @@
 				<th scope="col">Applicant</th>
 				<th scope="col">Scheme</th>
 				<th scope="col">Status</th>
-				<th scope="col">Remaining Days</th>
+				{% if status == 'Granted' %}
+					<th scope="col">End Date</th>
+				{% else %}
+					{% if status == 'All' %}
+						<th scope="col">Remaining Days</th>
+					{% endif %}
+				{% endif %}
 				<th scope="col">Action</th>
 			</tr>
 		</thead>
@@ -31,10 +37,19 @@
 							{{ application.status }}
 						</span>
 					</td>
-					<td class="align-center">
-						{{ application.getRemainingDays }}
-							
-					</td>
+					{% if status == 'Granted' %}
+						<td class="align-center">
+							{{ application.end_date }}
+								
+						</td>
+					{% else %}
+						{% if status == 'All' %}
+							<td class="align-center">
+								{{ application.getRemainingDays }}
+									
+							</td>
+						{% endif %}
+					{% endif %}
 					<td class="align-center">
 						{% if application.status == 'Pending' %}
 							<a href="{% url 'change_status' application.id %}"><button class="btn btn-primary btn-sm">Review</button></a>
